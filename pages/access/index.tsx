@@ -1,0 +1,13 @@
+import React from "react";
+import {Input} from "@nextui-org/react";
+
+export default function App() {
+  return (
+    <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+      <Input type="text" label="p_name" placeholder="Enter the Patient Name" />
+      <Input type="text" label="p_name" />
+
+      <Input type="email" label="Email" placeholder="Enter your email" />
+    </div>
+  );
+}
