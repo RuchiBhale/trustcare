@@ -1,13 +1,12 @@
 import { useState } from "react";
 //import Navbar from "@/components/navbar";
 import {
-    Card,
-    CardHeader,
-    CardBody,
-    CardFooter,
-    Image,
-    Input,
     Button,
+    Card,
+    CardBody,
+    CardHeader,
+    Image,
+    Input
 } from "@nextui-org/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -17,10 +16,11 @@ import { useRouter } from "next/router";
 interface FormData {
     p_name: string;
     password: string;
+    p_email:string;
     p_contact: string;
     address: string;
     gender: string;
-    dob: Date;
+    dob: string;
     reenterPassword: string;
     apiName: string;
 }
@@ -29,6 +29,8 @@ const initialState: FormData = {
     password: "",
     p_contact: "",
     p_name: "",
+    p_email:"",
+    dob:"",
     gender: "",
     address: "",
     reenterPassword: "",
@@ -61,7 +63,7 @@ export default function Login() {
         } else {
             if (formData.password === formData.reenterPassword) {
                 setPasswordMismatch(false);
-                if (isValidEmail(formData.email)) {
+                if (isValidEmail(formData.p_email)) {
                     setInvalidEmail(false);
                     console.log(formData);
                     //ApiService.post(`${formData.apiName}/${formData.username}`, formData)
@@ -125,7 +127,7 @@ export default function Login() {
                                     label="Phone"
                                     className="w-[300px]"
                                     name="Phone"
-                                    value={formData.Phone}
+                                    value={formData.p_contact}
                                     onChange={handleInputChange}
                                 />
                                 <Input
@@ -155,34 +157,50 @@ export default function Login() {
                             <CardBody className="items-center flex flex-col gap-3">
                                 <Input
                                     type="text"
-                                    label="Username"
+                                    label="Patient Name"
                                     className="w-[300px]"
-                                    name="username"
-                                    value={formData.Phone}
+                                    name="p_name"
+                                    value={formData.p_name}
                                     onChange={handleInputChange}
                                 />
                                 <Input
                                     type="text"
-                                    label="First Name"
+                                    label="Address"
                                     className="w-[300px]"
-                                    name="first_name"
-                                    value={formData.first_name}
+                                    name="address"
+                                    value={formData.address}
                                     onChange={handleInputChange}
                                 />
                                 <Input
                                     type="text"
-                                    label="Last Name"
+                                    label="Gender"
                                     className="w-[300px]"
-                                    name="last_name"
-                                    value={formData.last_name}
+                                    name="gender"
+                                    value={formData.gender}
+                                    onChange={handleInputChange}
+                                />
+                                <Input
+                                    type="text"
+                                    label="Date of Birth(yyyy-mm-dd)"
+                                    className="w-[300px]"
+                                    name="dob"
+                                    value={formData.dob}
                                     onChange={handleInputChange}
                                 />
                                 <Input
                                     type="email"
                                     label="Email"
                                     className="w-[300px]"
-                                    name="email"
-                                    value={formData.email}
+                                    name="p_email"
+                                    value={formData.p_email}
+                                    onChange={handleInputChange}
+                                />
+                                <Input
+                                    type="text"
+                                    label="Contact No"
+                                    className="w-[300px]"
+                                    name="p_contact"
+                                    value={formData.p_contact}
                                     onChange={handleInputChange}
                                 />
                                 <Input
