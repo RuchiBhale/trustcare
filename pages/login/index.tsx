@@ -1,5 +1,6 @@
 import { useState } from "react";
 //import Navbar from "@/components/navbar";
+import { ApiService } from "@/config/api/ApiService";
 import {
     Button,
     Card,
@@ -10,8 +11,6 @@ import {
 } from "@nextui-org/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-// import { setItem } from "@/utils/localStorageControl";
-// import { ApiService } from "@/config/api/ApiService";
 
 interface FormData {
     p_name: string;
@@ -34,13 +33,13 @@ const initialState: FormData = {
     gender: "",
     address: "",
     reenterPassword: "",
-    apiName: "user",
+    apiName: "login",
 };
 
 export default function Login() {
     const [isLogin, setIsLogin] = useState(true);
     const [formData, setFormData] = useState<FormData>(initialState);
-
+    const [serverData,setSeverData]=useState(null);
     const [passwordMismatch, setPasswordMismatch] = useState(false);
     const [invalidEmail, setInvalidEmail] = useState(false);
 
@@ -54,25 +53,36 @@ export default function Login() {
         e.preventDefault();
 
         if (isLogin) {
-            // ApiService.post(`${formData.apiName}/login`, formData)
-            // .then((res) => {
-            //     console.log(res);
-            //     setItem("authToken", res.data.authToken);
-            //     router.replace("/home");
-            // });
+            console.log(formData);
+            ApiService.post(`patient/login`, formData)
+            .then((res) => {
+                console.log(res);
+                setSeverData(res.data);
+                setTimeout(()=>{
+                    router.replace("/doctors");
+                    
+                },3000)
+                // setItem("authToken", res.data.authToken);
+                
+            });
         } else {
             if (formData.password === formData.reenterPassword) {
                 setPasswordMismatch(false);
                 if (isValidEmail(formData.p_email)) {
                     setInvalidEmail(false);
                     console.log(formData);
-                    //ApiService.post(`${formData.apiName}/${formData.username}`, formData)
-                    // .then((res) => {
-                    //     console.log(res);
-                    //     setItem("authToken", res.data.authToken);
-                    //     setItem("username", res.data.username);
-                    //     router.replace("/home");
-                    //});
+                    ApiService.post(`patient/${formData.p_contact}`, formData)
+                    .then((res) => {
+                        console.log(res);
+                        setSeverData(res.data);
+                        setTimeout(()=>{
+                            router.replace("/doctors");
+                            
+                        },3000)
+                        // setItem("authToken", res.data.authToken);
+                        
+                    });
+                  
                 } else {
                     // Invalid email
                     setInvalidEmail(true);
@@ -101,19 +111,19 @@ export default function Login() {
     return (
         <div>
             {/* {<Navbar />} */}
-            <div className="flex h-[80vh] items-center justify-center pt-10">
-                <Card className="w-[400px]">
+            <div className="flex h-[95vh] items-center justify-center pt-10">
+                <Card className="w-[550px]" style={{backgroundColor:'#87cefa'}}>
                     <CardHeader className="flex flex-col gap-3 pt-10">
                         <Image
                             alt="nextui logo"
-                            height={40}
-                            radius="sm"
-                            src="https://avatars.githubusercontent.com/u/86160567?s=200&v=4"
-                            width={40}
+                            height={45}
+                            radius="full"
+                            src="https://w7.pngwing.com/pngs/83/15/png-transparent-logo-health-care-medicine-hospital-automotive-battery-emblem-logo-first-aid-supplies-thumbnail.png"
+                            width={45}
                         />
                         <div className="flex flex-col text-center">
-                            <p className="text-md">TrustCare</p>
-                            <p className="text-small text-default-500">
+                            <p className="text-md" style={{fontWeight:'bold'}}>TrustCare</p>
+                            <p className="text-small text-default-500"style={{color:"black"}} >
                                 {isLogin ? "Login" : "Sign Up"}
                             </p>
                         </div>
@@ -123,11 +133,15 @@ export default function Login() {
                         {isLogin ? (
                             <CardBody className="items-center flex flex-col gap-3">
                                 <Input
-                                    type="text"
+                                    type="phone"
                                     label="Phone"
                                     className="w-[300px]"
-                                    name="Phone"
-                                    value={formData.p_contact}
+                                    name="p_contact"
+                                    value={
+                                        formData.p_contact == ""
+                                            ? ""
+                                            : formData.p_contact.toString()
+                                    }
                                     onChange={handleInputChange}
                                 />
                                 <Input
@@ -138,16 +152,25 @@ export default function Login() {
                                     value={formData.password}
                                     onChange={handleInputChange}
                                 />
-                                <Button color="primary" type="submit">
+                                <Button color="primary" type="submit" onClick={handleFormSubmit}>
                                     <p className="text-white">Sign In</p>
                                 </Button>
+                                {serverData &&(
+                                    <div>
+                                        <h2>Sever Response</h2>
+                                        <pre>{JSON.stringify(serverData,null,2)}</pre>
+                                    </div>
+
+                                )}
                                 <Link href="/">
-                                    <p className="text-small text-default-500">
+                                    <p className="text-small text-default-500" style={{color:"black"}}>
+
                                         Forgot password?
                                     </p>
                                 </Link>
                                 <p
                                     className="text-small text-primary hover:cursor-pointer"
+                                    style={{color:"black"}}
                                     onClick={handleSignIn}
                                 >
                                     New User? Sign Up
@@ -181,7 +204,8 @@ export default function Login() {
                                 />
                                 <Input
                                     type="text"
-                                    label="Date of Birth(yyyy-mm-dd)"
+                                    label="Date of Birth"
+                                    placeholder="(yyyy-mm-dd)"
                                     className="w-[300px]"
                                     name="dob"
                                     value={formData.dob}
@@ -229,16 +253,24 @@ export default function Login() {
                                         Invalid email.
                                     </p>
                                 )}
-                                <Button color="primary" type="submit">
+                                <Button color="primary" onClick={handleFormSubmit}type="submit">
                                     <p className="text-white">Sign Up</p>
                                 </Button>
+                                {serverData &&(
+                                    <div>
+                                        <h2>Sever Response</h2>
+                                        <pre>{JSON.stringify(serverData,null,2)}</pre>
+                                    </div>
+
+                                )}
                                 <Link href="/">
-                                    <p className="text-small text-default-500">
+                                    <p className="text-small text-default-500" style={{color:"black"}}>
                                         Forgot password?
                                     </p>
                                 </Link>
                                 <p
                                     className="text-small text-primary hover:cursor-pointer "
+                                    style={{color:"black"}}
                                     onClick={handleSignIn}
                                 >
                                     Existing User? Log In
@@ -246,8 +278,11 @@ export default function Login() {
                             </CardBody>
                         )}
                     </form>
+                    
                 </Card>
             </div>
+          
         </div>
+         
     );
 }
